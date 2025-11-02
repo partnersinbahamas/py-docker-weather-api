@@ -13,33 +13,34 @@ def get_weather() -> None:
         print("API_KEY not found in environment variables.")
         return
 
-    if is_automated:
-        city = os.environ.get("CITY", "Paris")
-    else:
-        city = input("Enter city name or press Q to exit: ").strip()
+    while True:
+        if is_automated:
+            city = os.environ.get("CITY", "Paris")
+        else:
+            city = input("Enter city name or press Q to exit: ").strip()
 
-        if city.lower() == "q":
-            print("Exiting...")
+            if city.lower() == "q":
+                print("Exiting...")
+                return
+
+        url = f"{BASE_URL}/current.json?key={API_KEY}&q={city}"
+
+        response = requests.get(url)
+        response.raise_for_status()
+
+        data = response.json()
+
+        name = data["location"]["name"]
+        country = data["location"]["country"]
+        temp_c = data["current"]["temp_c"]
+        temp_f = data["current"]["temp_f"]
+
+        print(f"Weather in {name}, {country}: {temp_c}°C ({temp_f}°F)")
+
+        if is_automated:
             return
-
-    url = f"{BASE_URL}/current.json?key={API_KEY}&q={city}"
-
-    response = requests.get(url)
-    response.raise_for_status()
-
-    data = response.json()
-
-    name = data["location"]["name"]
-    country = data["location"]["country"]
-    temp_c = data["current"]["temp_c"]
-    temp_f = data["current"]["temp_f"]
-
-    print(f"Weather in {name}, {country}: {temp_c}°C ({temp_f}°F)")
-
-    if is_automated:
-        return
-
-    get_weather()
+    #
+    # get_weather()
 
 
 if __name__ == "__main__":
