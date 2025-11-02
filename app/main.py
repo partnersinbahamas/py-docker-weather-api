@@ -1,36 +1,48 @@
 import os
 import requests
+import sys
 
 API_KEY = os.environ.get("API_KEY")
-
 BASE_URL = "http://api.weatherapi.com/v1"
 
 def get_weather() -> None:
+    is_interactive = not sys.stdin.isatty()
+
     if not API_KEY:
         print("API_KEY not found in environment variables.")
         return
 
-    city_input = input("Enter city name or press Q to exit: ").strip()
+    if is_interactive:
+        city = os.environ.get("CITY")
 
-    if city_input.lower() == "q":
-        print("Exiting...")
+        if not city:
+            print("CITY not found in environment variables.")
+            return
     else:
-        url = f"{BASE_URL}/current.json?key={API_KEY}&q={city_input}"
+        city = input("Enter city name or press Q to exit: ").strip()
 
-        response = requests.get(url)
-        response.raise_for_status()
+        if city.lower() == "q":
+            print("Exiting...")
+            return
 
-        data = response.json()
+    url = f"{BASE_URL}/current.json?key={API_KEY}&q={city}"
 
-        name = data["location"]["name"]
-        country = data["location"]["country"]
-        temp_c = data["current"]["temp_c"]
-        temp_f = data["current"]["temp_f"]
+    response = requests.get(url)
+    response.raise_for_status()
 
-        print(f"Weather in {name}, {country}: {temp_c}°C ({temp_f}°F)")
+    data = response.json()
 
-        get_weather()
+    name = data["location"]["name"]
+    country = data["location"]["country"]
+    temp_c = data["current"]["temp_c"]
+    temp_f = data["current"]["temp_f"]
 
+    print(f"Weather in {name}, {country}: {temp_c}°C ({temp_f}°F)")
+
+    if is_interactive:
+        return
+
+    get_weather()
 
 if __name__ == "__main__":
     get_weather()
