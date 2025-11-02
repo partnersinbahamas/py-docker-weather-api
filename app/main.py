@@ -5,6 +5,7 @@ import sys
 API_KEY = os.environ.get("API_KEY")
 BASE_URL = "http://api.weatherapi.com/v1"
 
+
 def get_weather() -> None:
     is_interactive = not sys.stdin.isatty()
 
@@ -43,6 +44,7 @@ def get_weather() -> None:
         return
 
     get_weather()
+
 
 if __name__ == "__main__":
     get_weather()
