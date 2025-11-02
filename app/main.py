@@ -7,18 +7,14 @@ BASE_URL = "http://api.weatherapi.com/v1"
 
 
 def get_weather() -> None:
-    is_interactive = not sys.stdin.isatty()
+    is_automated = not sys.stdin.isatty()
 
     if not API_KEY:
         print("API_KEY not found in environment variables.")
         return
 
-    if is_interactive:
-        city = os.environ.get("CITY")
-
-        if not city:
-            print("CITY not found in environment variables.")
-            return
+    if is_automated:
+        city = os.environ.get("CITY", "Paris")
     else:
         city = input("Enter city name or press Q to exit: ").strip()
 
@@ -40,7 +36,7 @@ def get_weather() -> None:
 
     print(f"Weather in {name}, {country}: {temp_c}°C ({temp_f}°F)")
 
-    if is_interactive:
+    if is_automated:
         return
 
     get_weather()
